@@ -9,7 +9,7 @@ import (
 // frame http service level error code
 // each resource name corresponds to a unique number (http type), the number range is 1~100, if there is the same number, trigger panic
 var (
-	frameNO       = 57
+	frameNO       = 87
 	frameName     = "frame"
 	frameBaseCode = errcode.HCode(frameNO)
 

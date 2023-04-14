@@ -3,8 +3,8 @@ copy the configuration file to the configs directory and binary file before star
 
 ```
 ├── configs
-│         └── frame.yml
-├── frame
+│         └── cloud.yml
+├── cloud
 ├── deploy.sh
 └── run.sh
 ```

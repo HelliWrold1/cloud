@@ -15,7 +15,7 @@ import (
 )
 
 func TestInitMysql(t *testing.T) {
-	err := config.Init(configs.Path("frame.yml"))
+	err := config.Init(configs.Path("cloud.yml"))
 	if err != nil {
 		panic(err)
 	}
@@ -35,7 +35,7 @@ func TestInitMysql(t *testing.T) {
 }
 
 func TestInitMysqlError(t *testing.T) {
-	err := config.Init(configs.Path("frame.yml"))
+	err := config.Init(configs.Path("cloud.yml"))
 	if err != nil {
 		panic(err)
 	}
@@ -46,14 +46,14 @@ func TestInitMysqlError(t *testing.T) {
 	utils.SafeRunWithTimeout(time.Second*2, func(cancel context.CancelFunc) {
 		_ = CloseMysql()
 		InitMysql()
-		assert.NotNil(t, db)
+		assert.NotNil(t, DB)
 		cancel()
 	})
 }
 
 func TestCloseMysql(t *testing.T) {
 	defer func() { recover() }()
-	db = &gorm.DB{}
+	DB = &gorm.DB{}
 	err := CloseMysql()
 	assert.NoError(t, err)
 }
@@ -65,7 +65,7 @@ func TestInitRedis(t *testing.T) {
 		}
 	}()
 
-	err := config.Init(configs.Path("frame.yml"))
+	err := config.Init(configs.Path("cloud.yml"))
 	if err != nil {
 		panic(err)
 	}
@@ -94,7 +94,7 @@ func TestGetCacheType(t *testing.T) {
 	ct := GetCacheType()
 	assert.NotNil(t, ct)
 
-	err := config.Init(configs.Path("frame.yml"))
+	err := config.Init(configs.Path("cloud.yml"))
 	if err != nil {
 		panic(err)
 	}

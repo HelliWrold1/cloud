@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # image name, no capital letters
-SERVER_NAME="cloud.frame"
+SERVER_NAME="cloud.cloud"
 
 # image repo address, passed in via the first parameter
 REPO_HOST=$1

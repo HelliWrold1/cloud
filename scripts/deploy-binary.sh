@@ -1,6 +1,6 @@
 #!/usr/bin/expect
 
-set serviceName "frame"
+set serviceName "cloud"
 
 # parameters
 set username [lindex $argv 0]

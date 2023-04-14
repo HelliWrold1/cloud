@@ -3,8 +3,8 @@
 dockerComposeFilePath="deployments/docker-compose"
 
 mkdir -p ${dockerComposeFilePath}/configs
-if [ ! -f "${dockerComposeFilePath}/configs/frame.yml" ];then
-  cp configs/frame.yml ${dockerComposeFilePath}/configs
+if [ ! -f "${dockerComposeFilePath}/configs/cloud.yml" ];then
+  cp configs/cloud.yml ${dockerComposeFilePath}/configs
 fi
 
 # shellcheck disable=SC2164

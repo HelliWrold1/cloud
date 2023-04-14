@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SERVER_NAME="frame"
+SERVER_NAME="cloud"
 DEPLOY_FILE="deployments/kubernetes/${SERVER_NAME}-deployment.yml"
 
 function checkResult() {

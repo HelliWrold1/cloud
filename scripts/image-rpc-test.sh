@@ -2,9 +2,9 @@
 
 # build rpc service test image
 
-serverName="frame"
+serverName="cloud"
 # image name of the service, no capital letters
-SERVER_NAME="cloud.frame.rpc-test"
+SERVER_NAME="cloud.cloud.rpc-test"
 # Dockerfile file directory
 DOCKERFILE_PATH="build"
 DOCKERFILE="${DOCKERFILE_PATH}/Dockerfile_test"

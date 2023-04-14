@@ -16,6 +16,243 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/v1/downlink": {
+            "post": {
+                "description": "submit information to create downlink",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "downlink"
+                ],
+                "summary": "create downlink",
+                "parameters": [
+                    {
+                        "description": "downlink information",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.CreateDownlinkRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/downlink/{id}": {
+            "get": {
+                "description": "get downlink details by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "downlink"
+                ],
+                "summary": "get downlink details",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.Result"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "update downlink information by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "downlink"
+                ],
+                "summary": "update downlink information",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "downlink information",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.UpdateDownlinkByIDRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.Result"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "delete downlink by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "downlink"
+                ],
+                "summary": "delete downlink",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/downlinks": {
+            "post": {
+                "description": "paging and conditional fetching of downlinks lists using post requests",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "downlink"
+                ],
+                "summary": "get a list of downlinks",
+                "parameters": [
+                    {
+                        "description": "query parameters",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.Params"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/downlinks/delete/ids": {
+            "post": {
+                "description": "delete downlinks by multiple id using a post request",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "downlink"
+                ],
+                "summary": "delete downlinks by multiple id",
+                "parameters": [
+                    {
+                        "description": "id array",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.DeleteDownlinksByIDsRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/downlinks/ids": {
+            "post": {
+                "description": "get downlinks by multiple id using a post request",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "downlink"
+                ],
+                "summary": "get downlinks by multiple id",
+                "parameters": [
+                    {
+                        "description": "id array",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.GetDownlinksByIDsRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.Result"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/frame": {
             "post": {
                 "description": "submit information to create frame",
@@ -252,6 +489,40 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/api/v1/mqtt/publish": {
+            "post": {
+                "description": "submit information to publish mqtt message",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "MQTT"
+                ],
+                "summary": "publish mqtt message",
+                "parameters": [
+                    {
+                        "description": "mqtt information",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.MQTTPublishRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.Result"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -275,6 +546,17 @@ const docTemplate = `{
                 }
             }
         },
+        "types.CreateDownlinkRequest": {
+            "type": "object",
+            "properties": {
+                "dev_addr": {
+                    "type": "string"
+                },
+                "down_link": {
+                    "type": "string"
+                }
+            }
+        },
         "types.CreateFrameRequest": {
             "type": "object",
             "properties": {
@@ -292,7 +574,33 @@ const docTemplate = `{
                 }
             }
         },
+        "types.DeleteDownlinksByIDsRequest": {
+            "type": "object",
+            "properties": {
+                "ids": {
+                    "description": "id list",
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
         "types.DeleteFramesByIDsRequest": {
+            "type": "object",
+            "properties": {
+                "ids": {
+                    "description": "id list",
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
+        "types.GetDownlinksByIDsRequest": {
             "type": "object",
             "properties": {
                 "ids": {
@@ -315,6 +623,23 @@ const docTemplate = `{
                     "items": {
                         "type": "integer"
                     }
+                }
+            }
+        },
+        "types.MQTTPublishRequest": {
+            "type": "object",
+            "properties": {
+                "payload": {
+                    "type": "string"
+                },
+                "qos": {
+                    "type": "integer"
+                },
+                "retain": {
+                    "type": "boolean"
+                },
+                "topic": {
+                    "type": "string"
                 }
             }
         },
@@ -359,6 +684,21 @@ const docTemplate = `{
                 }
             }
         },
+        "types.UpdateDownlinkByIDRequest": {
+            "type": "object",
+            "properties": {
+                "dev_addr": {
+                    "type": "string"
+                },
+                "down_link": {
+                    "type": "string"
+                },
+                "id": {
+                    "description": "uint64 id",
+                    "type": "integer"
+                }
+            }
+        },
         "types.UpdateFrameByIDRequest": {
             "type": "object",
             "properties": {
@@ -389,7 +729,7 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "localhost:8080",
 	BasePath:         "",
 	Schemes:          []string{"http", "https"},
-	Title:            "frame api docs",
+	Title:            "cloud api docs",
 	Description:      "http server api docs",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,

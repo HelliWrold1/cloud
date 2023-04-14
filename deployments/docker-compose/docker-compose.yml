@@ -1,11 +1,11 @@
 version: "3.7"
 
 services:
-  frame:
-    image: cloud.frame:latest
-    container_name: frame
+  cloud:
+    image: cloud.cloud:latest
+    container_name: cloud
     restart: always
-    command: ["./frame", "-c", "/app/configs/frame.yml"]
+    command: ["./cloud", "-c", "/app/configs/cloud.yml"]
     volumes:
       - $PWD/configs:/app/configs
     ports:

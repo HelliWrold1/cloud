@@ -68,6 +68,8 @@ func NewRouter() *gin.Engine {
 		prof.Register(r, prof.WithIOWaitTime())
 	}
 
+	r.Use(middleware.Auth())
+
 	// validator
 	binding.Validator = validator.Init()
 

@@ -9,16 +9,29 @@ import (
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/zhufuyi/sponge/pkg/mysql"
-	"os"
 	"time"
 )
 
-var client MQTT.Client
-var uplinkToCloud string = "uplinkToCloud"
-var downlinkToNode string = "downlinkToNode"
 var frameDao dao.FrameDao
 
-func Init() {
+var client MQTT.Client
+var uplinkToCloud string = "uplinkToCloud"
+var rulesFromCloud string = "rulesFromCloud"
+var downlinkToNode string = "downlinkToNode"
+
+type SubTopicInfo struct {
+	qos      byte
+	callback MQTT.MessageHandler
+}
+
+type PubMsgInfo struct {
+	Topic   string `json:"topic"`
+	Qos     byte   `json:"qos"`
+	Payload string `json:"payload"`
+	Retain  bool   `json:"retain"`
+}
+
+func Init() error {
 
 	// 获取数据库对象
 	frameDao = dao.NewFrameDao(
@@ -35,6 +48,10 @@ func Init() {
 
 	opts.SetOnConnectHandler(func(c MQTT.Client) {
 		fmt.Println("MQTT connected")
+
+		if token := client.Subscribe(uplinkToCloud, 1, messageReceivedCallback); token.Wait() && token.Error() != nil {
+			fmt.Println(token.Error())
+		}
 	})
 
 	opts.SetConnectionLostHandler(func(c MQTT.Client, err error) {
@@ -45,18 +62,14 @@ func Init() {
 	client = MQTT.NewClient(opts)
 
 	if token := client.Connect(); token.Wait() && token.Error() != nil {
-		panic(token.Error())
+		return token.Error()
 	}
-
-	if token := client.Subscribe(uplinkToCloud, 1, messageReceivedCallback); token.Wait() && token.Error() != nil {
-		fmt.Println(token.Error())
-		os.Exit(1)
-	}
+	return nil
 }
 
-// PublishCmd 发布指令消息
-func PublishCmd(payload string) error {
-	if token := client.Publish(downlinkToNode, 1, false, payload); token.Wait() && token.Error() != nil {
+// Publish 发布消息
+func Publish(p PubMsgInfo) error {
+	if token := client.Publish(p.Topic, p.Qos, p.Retain, p.Payload); token.Wait() && token.Error() != nil {
 		return token.Error()
 	}
 	return nil
@@ -69,30 +82,33 @@ func Close() {
 // messageReceivedCallback MQTT消息收到回调
 func messageReceivedCallback(client MQTT.Client, message MQTT.Message) {
 	fmt.Printf("Received message on topic [%s]: \n%s\n", message.Topic(), message.Payload())
-	if message.Topic() == uplinkToCloud {
-		frame := string(message.Payload())
+
+	topic := message.Topic()
+	payloadStr := string(message.Payload())
+	if topic == uplinkToCloud {
 		var obj map[string]interface{}
 
-		err := jsoniter.Unmarshal([]byte(frame), &obj)
+		err := jsoniter.Unmarshal([]byte(payloadStr), &obj)
 		if err != nil {
 			fmt.Println(err.Error())
+			return
 		}
 		dateType, _ := obj["datetype"].(int)
 		devAddr, _ := obj["devaddr"].(string)
 		gatewayMac, _ := obj["mac"].(string)
-		//localTimeStr, _ := obj["localtime"].(string)
-		//localTime, _ := time.Parse("2006-01-02 15:04:05", localTimeStr)
 		utcTimeStr, _ := obj["datetime"].(string)
 		utcTime, _ := time.Parse("2006-01-02T15:04:05Z", utcTimeStr)
-		frameDao.Create(context.Background(), &model.Frame{
+		err = frameDao.Create(context.Background(), &model.Frame{
 			Model: mysql.Model{
-				//CreatedAt: localTime, // 插入的是localTime
-				CreatedAt: utcTime, // 插入的是utcTime
+				CreatedAt: utcTime, // 插入的是utcTime, 框架会自动把UTC时间转换为localtime存入数据库
 			},
-			Frame:      frame,
+			Frame:      payloadStr,
 			DevAddr:    devAddr,
 			DataType:   dateType,
 			GatewayMac: gatewayMac,
 		})
+		if err != nil {
+			return
+		}
 	}
 }

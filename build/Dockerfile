@@ -11,8 +11,8 @@ RUN apk add tzdata  \
 RUN apk add curl
 
 COPY configs/ /app/configs/
-COPY frame /app/frame
-RUN chmod +x /app/frame
+COPY cloud /app/cloud
+RUN chmod +x /app/cloud
 
 # http port
 EXPOSE 8080
@@ -20,6 +20,6 @@ EXPOSE 8080
 
 WORKDIR /app
 
-CMD ["./frame", "-c", "configs/frame.yml"]
-# if you use the Configuration Center, frame.yml is changed to the Configuration Center configuration.
-#CMD ["./frame", "-c", "configs/frame.yml", "-enable-cc"]
+CMD ["./cloud", "-c", "configs/cloud.yml"]
+# if you use the Configuration Center, cloud.yml is changed to the Configuration Center configuration.
+#CMD ["./cloud", "-c", "configs/cloud.yml", "-enable-cc"]

@@ -22,5 +22,5 @@ dist/
 *.ipr
 *.iws
 
-cmd/frame/frame
+cmd/cloud/cloud
 

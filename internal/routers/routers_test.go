@@ -15,7 +15,7 @@ import (
 )
 
 func TestNewRouter(t *testing.T) {
-	err := config.Init(configs.Path("frame.yml"))
+	err := config.Init(configs.Path("cloud.yml"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -35,7 +35,7 @@ func TestNewRouter(t *testing.T) {
 }
 
 func TestNewRouter2(t *testing.T) {
-	err := config.Init(configs.Path("frame.yml"))
+	err := config.Init(configs.Path("cloud.yml"))
 	if err != nil {
 		t.Fatal(err)
 	}

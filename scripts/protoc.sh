@@ -94,9 +94,9 @@ function generateByAllProto(){
 }
 
 function generateBySpecifiedProto(){
-  # get the proto file of the frame server
+  # get the proto file of the cloud server
   allProtoFiles=""
-  listProtoFiles ${protoBasePath}/frame
+  listProtoFiles ${protoBasePath}/cloud
   cd ..
   specifiedProtoFiles=$allProtoFiles
   # todo generate router code for gin here
@@ -118,7 +118,7 @@ function generateBySpecifiedProto(){
   # return error code template file *_http.go (default path in internal/ecode)
   protoc --proto_path=. --proto_path=./third_party \
     --go-gin_out=. --go-gin_opt=paths=source_relative --go-gin_opt=plugin=service \
-    --go-gin_opt=moduleName=github.com/HelliWrold1/cloud --go-gin_opt=serverName=frame \
+    --go-gin_opt=moduleName=github.com/HelliWrold1/cloud --go-gin_opt=serverName=cloud \
     $specifiedProtoFiles
 
   checkResult $?

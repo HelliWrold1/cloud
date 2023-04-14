@@ -70,9 +70,9 @@ docs: mod fmt
 # generate interactive visual function dependency graphs
 graph:
 	@echo "generating graph ......"
-	@cp -f cmd/frame/main.go .
-	go-callvis -skipbrowser -format=svg -nostd -file=frame github.com/HelliWrold1/cloud
-	@rm -f main.go frame.gv
+	@cp -f cmd/cloud/main.go .
+	go-callvis -skipbrowser -format=svg -nostd -file=cloud github.com/HelliWrold1/cloud
+	@rm -f main.go cloud.gv
 
 
 .PHONY: proto
@@ -88,10 +88,10 @@ proto-doc:
 
 
 .PHONY: build
-# build frame for linux amd64 binary
+# build cloud for linux amd64 binary
 build:
-	@echo "building 'frame', linux binary file will output to 'cmd/frame'"
-	@cd cmd/frame && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GOPROXY=https://goproxy.cn,direct go build
+	@echo "building 'cloud', linux binary file will output to 'cmd/cloud'"
+	@cd cmd/cloud && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GOPROXY=https://goproxy.cn,direct go build
 
 
 
@@ -166,13 +166,13 @@ deploy-binary: binary-package
 .PHONY: clean
 # clean binary file, cover.out, template file
 clean:
-	@rm -vrf cmd/frame/frame
+	@rm -vrf cmd/cloud/cloud
 	@rm -vrf cover.out
-	@rm -vrf main.go frame.gv
+	@rm -vrf main.go cloud.gv
 	@rm -vrf internal/ecode/*go.gen.*
 	@rm -vrf internal/handller/*go.gen.*
 	@rm -vrf internal/service/*go.gen.*
-	@rm -rf frame-binary.tar.gz
+	@rm -rf cloud-binary.tar.gz
 	@echo "clean finished"
 
 

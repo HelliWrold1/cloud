@@ -1,19 +1,23 @@
 package main
 
 import (
-	"github.com/HelliWrold1/cloud/cmd/frame/initial"
-	MQTT "github.com/HelliWrold1/cloud/internal/mqtt"
+	"github.com/HelliWrold1/cloud/cmd/cloud/initial"
 	"github.com/zhufuyi/sponge/pkg/app"
+
+	MQTT "github.com/HelliWrold1/cloud/internal/mqtt"
 )
 
-// @title frame api docs
+// @title cloud api docs
 // @description http server api docs
 // @schemes http https
 // @version v0.0.0
 // @host localhost:8080
 func main() {
 	initial.Config()
-	MQTT.Init()
+	err := MQTT.Init()
+	if err != nil {
+		return
+	}
 	defer MQTT.Close()
 	servers := initial.RegisterServers()
 	closes := initial.RegisterClose(servers)

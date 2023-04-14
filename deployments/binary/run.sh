@@ -1,6 +1,6 @@
 #!/bin/bash
 
-serviceName="frame"
+serviceName="cloud"
 cmdStr="./${serviceName} -c configs/${serviceName}.yml"
 
 chmod +x ./${serviceName}

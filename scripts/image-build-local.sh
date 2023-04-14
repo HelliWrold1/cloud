@@ -3,9 +3,9 @@
 # build the image for local docker, using the binaries, if you want to reduce the size of the image,
 # use upx to compress the binaries before building the image.
 
-serverName="frame"
+serverName="cloud"
 # image name of the service, no capital letters
-SERVER_NAME="cloud.frame"
+SERVER_NAME="cloud.cloud"
 # Dockerfile file directory
 DOCKERFILE_PATH="build"
 DOCKERFILE="${DOCKERFILE_PATH}/Dockerfile"

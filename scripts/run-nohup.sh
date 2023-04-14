@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # chkconfig: - 85 15
-# description: frame
+# description: cloud
 
-serverName="frame"
+serverName="cloud"
 cmdStr="cmd/${serverName}/${serverName}"
 
 

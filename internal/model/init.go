@@ -22,7 +22,7 @@ var (
 )
 
 var (
-	db    *gorm.DB
+	DB    *gorm.DB
 	once1 sync.Once
 
 	redisCli *redis.Client
@@ -49,30 +49,31 @@ func InitMysql() {
 	}
 
 	var err error
-	db, err = mysql.Init(config.Get().Mysql.Dsn, opts...)
+	DB, err = mysql.Init(config.Get().Mysql.Dsn, opts...)
 	if err != nil {
 		panic("mysql.Init error: " + err.Error())
 	}
+	migration()
 }
 
 // GetDB get db
 func GetDB() *gorm.DB {
-	if db == nil {
+	if DB == nil {
 		once1.Do(func() {
 			InitMysql()
 		})
 	}
 
-	return db
+	return DB
 }
 
 // CloseMysql close mysql
 func CloseMysql() error {
-	if db == nil {
+	if DB == nil {
 		return nil
 	}
 
-	sqlDB, err := db.DB()
+	sqlDB, err := DB.DB()
 	if err != nil {
 		return err
 	}

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-serviceName="frame"
+serviceName="cloud"
 
 mkdir -p ${serviceName}-binary/configs
 

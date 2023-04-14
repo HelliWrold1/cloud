@@ -71,7 +71,7 @@ func initConfig() {
 		// get the configuration from the configuration center (first get the nacos configuration,
 		// then read the service configuration according to the nacos configuration center)
 		if configFile == "" {
-			configFile = configs.Path("frame_cc.yml")
+			configFile = configs.Path("cloud_cc.yml")
 		}
 		nacosConfig, err := config.NewCenter(configFile)
 		if err != nil {
@@ -91,7 +91,7 @@ func initConfig() {
 	} else {
 		// get configuration from local configuration file
 		if configFile == "" {
-			configFile = configs.Path("frame.yml")
+			configFile = configs.Path("cloud.yml")
 		}
 		err := config.Init(configFile)
 		if err != nil {

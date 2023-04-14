@@ -1,6 +1,6 @@
 #!/bin/bash
 
-serviceName="frame"
+serviceName="cloud"
 
 function checkResult() {
     result=$1

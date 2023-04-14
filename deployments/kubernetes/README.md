@@ -28,5 +28,5 @@ simple test of http port
 
 ```bash
 # mapping to the http port of the service on the local port
-kubectl port-forward --address=0.0.0.0 service/<frame-svc> 8080:8080 -n <cloud>
+kubectl port-forward --address=0.0.0.0 service/<cloud-svc> 8080:8080 -n <cloud>
 ```

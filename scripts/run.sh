@@ -1,6 +1,6 @@
 #!/bin/bash
 
-serverName="frame"
+serverName="cloud"
 
 binaryFile="cmd/${serverName}/${serverName}"
 

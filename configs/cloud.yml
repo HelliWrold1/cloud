@@ -2,7 +2,7 @@
 
 # app settings
 app:
-  name: "frame"  # server name
+  name: "cloud"  # server name
   env: "dev"                           # runtime environment, dev: development environment, prod: production environment, test: test environment
   version: "v0.0.0"
   host: "127.0.0.1"                  # domain or ip, for service registration
@@ -50,6 +50,13 @@ redis:
   readTimeout: 2        # read timeout, unit(second)
   writeTimeout: 2       # write timeout, unit(second)
 
+# mqtt broker settings
+mqtt:
+  ip: "localhost"
+  port: "1883"
+
+crypt:
+  sha256key: "cloud"
 
 # jaeger settings
 jaeger:

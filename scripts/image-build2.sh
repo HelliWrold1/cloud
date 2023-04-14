@@ -2,9 +2,9 @@
 
 # two-stage build docker image
 
-serverName="frame"
+serverName="cloud"
 # image name of the service, no capital letters
-SERVER_NAME="cloud.frame"
+SERVER_NAME="cloud.cloud"
 # Dockerfile file directory
 DOCKERFILE_PATH="build"
 DOCKERFILE="${DOCKERFILE_PATH}/Dockerfile_build"
