@@ -277,7 +277,7 @@ func (d *userDao) ExistUserByUsername(ctx context.Context, username string) (*mo
 }
 
 func (d *userDao) UpdateByIDPasswordToNew(ctx context.Context, uid uint64, newPwd string) error {
-	err := d.db.WithContext(ctx).Update("password", newPwd).Where("id = ?", uid).Error
+	err := d.db.Model(&model.User{}).WithContext(ctx).Where("id = ?", uid).Update("password", newPwd).Error
 	if err != nil {
 		return err
 	}

@@ -51,8 +51,8 @@ func NewUserHandler() UserHandler {
 }
 
 // Create a record
-// @Summary create user
-// @Description submit information to create user
+// @Summary register user
+// @Description submit information to register user
 // @Tags user
 // @accept json
 // @Produce json
@@ -337,25 +337,22 @@ func (h *userHandler) UpdateByUserPasswordToNew(c *gin.Context) {
 		return
 	}
 
-	username := c.Param("username")
-	oldPwd := c.Param("old_password")
-	newPwd := c.Param("new_password")
 	// 查询用户是否存在
-	user, err := h.iDao.QueryUserByUsername(c, username)
+	user, err := h.iDao.QueryUserByUsername(c, form.Username)
 	if err != nil {
 		logger.Error("User Not Found", logger.Err(err), middleware.GCtxRequestIDField(c))
 		response.Error(c, ecode.AccessDenied)
 		return
 	}
 	// 对比用户输入的旧密码与数据库内的旧密码
-	err = crypt.CheckSaltPwd(oldPwd, user.Password)
+	err = crypt.CheckSaltPwd(form.OldPassword, user.Password)
 	if err != nil {
 		logger.Error("AccessDenied", logger.Err(err), middleware.GCtxRequestIDField(c))
 		response.Error(c, ecode.AccessDenied)
 		return
 	}
 	// 给新密码加盐
-	cryptedNewPwd, err := crypt.GenerateSaltPwd(newPwd)
+	cryptedNewPwd, err := crypt.GenerateSaltPwd(form.NewPassword)
 	if err != nil {
 		logger.Error("AccessDenied", logger.Err(err), middleware.GCtxRequestIDField(c))
 		response.Error(c, ecode.Unauthorized)
@@ -368,8 +365,8 @@ func (h *userHandler) UpdateByUserPasswordToNew(c *gin.Context) {
 		return
 	}
 	data := &types.UpdateUserPasswordResponse{
-		Username: username,
-		Password: newPwd,
+		Username: form.Username,
+		Password: form.NewPassword,
 	}
 	response.Success(c, gin.H{"user": data})
 }

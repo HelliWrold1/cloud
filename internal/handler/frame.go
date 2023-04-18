@@ -184,7 +184,6 @@ func (h *frameHandler) UpdateByID(c *gin.Context) {
 // @Summary get frame details
 // @Description get frame details by id
 // @Tags frame
-// @Security BearerTokenAuth
 // @Param id path string true "id"
 // @Accept json
 // @Produce json
@@ -223,7 +222,6 @@ func (h *frameHandler) GetByID(c *gin.Context) {
 // @Summary get frames by multiple id
 // @Description get frames by multiple id using a post request
 // @Tags frame
-// @Security BearerTokenAuth
 // @Param data body types.GetFramesByIDsRequest true "id array"
 // @Accept json
 // @Produce json
@@ -263,7 +261,6 @@ func (h *frameHandler) ListByIDs(c *gin.Context) {
 // @Tags frame
 // @accept json
 // @Produce json
-// @Security BearerTokenAuth
 // @Param data body types.Params true "query parameters"
 // @Success 200 {object} types.Result{}
 // @Router /api/v1/frames [post]

@@ -33,5 +33,7 @@ func Test_Generate_SaltPwd(t *testing.T) {
 		if err != nil {
 			assert.NotNil(t, err)
 		}
+		err = CheckSaltPwd("123456", "$2a$10$KBkD9WqUd3ZV4sNqErrxfuGUOgaGKmGbcDuwiIZsENsebc0EduHgW")
+		assert.Nil(t, err)
 	})
 }

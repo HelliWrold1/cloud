@@ -329,11 +329,6 @@ const docTemplate = `{
         },
         "/api/v1/frame/{id}": {
             "get": {
-                "security": [
-                    {
-                        "BearerTokenAuth": []
-                    }
-                ],
                 "description": "get frame details by id",
                 "consumes": [
                     "application/json"
@@ -445,11 +440,6 @@ const docTemplate = `{
         },
         "/api/v1/frames": {
             "post": {
-                "security": [
-                    {
-                        "BearerTokenAuth": []
-                    }
-                ],
                 "description": "paging and conditional fetching of frames lists using post requests",
                 "consumes": [
                     "application/json"
@@ -523,11 +513,6 @@ const docTemplate = `{
         },
         "/api/v1/frames/ids": {
             "post": {
-                "security": [
-                    {
-                        "BearerTokenAuth": []
-                    }
-                ],
                 "description": "get frames by multiple id using a post request",
                 "consumes": [
                     "application/json"
@@ -635,7 +620,7 @@ const docTemplate = `{
         },
         "/api/v1/user/register": {
             "post": {
-                "description": "submit information to create user",
+                "description": "submit information to register user",
                 "consumes": [
                     "application/json"
                 ],
@@ -645,7 +630,7 @@ const docTemplate = `{
                 "tags": [
                     "user"
                 ],
-                "summary": "create user",
+                "summary": "register user",
                 "parameters": [
                     {
                         "description": "user information",
