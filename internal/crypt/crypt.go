@@ -1,26 +1,27 @@
 package crypt
 
 import (
-	"crypto/hmac"
-	"crypto/sha256"
-	"encoding/base64"
-	"github.com/HelliWrold1/cloud/internal/config"
+	"golang.org/x/crypto/bcrypt"
 )
 
-func SetPwd(password string) string {
-	mac := hmac.New(sha256.New, []byte(config.Get().Crypt.Sha256Key))
-	mac.Write([]byte(password))
-	sum := mac.Sum(nil)
-	return base64.URLEncoding.EncodeToString(sum)
+func GenerateSaltPwd(password string) (string, error) {
+	// 加盐处理
+	_, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return "", err
+	}
+	hashedPwd, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return "", err
+	}
+	return string(hashedPwd), nil
 }
 
-func CheckPwd(password string, hashedPwd string) bool {
-	mac := hmac.New(sha256.New, []byte(config.Get().Crypt.Sha256Key))
-	mac.Write([]byte(password))
-	sum := mac.Sum(nil)
-	base64.URLEncoding.EncodeToString(sum)
-	if SetPwd(password) == hashedPwd {
-		return true
+func CheckSaltPwd(password string, hashedPwd string) error {
+	// 判断加盐处理后的密码是否正确
+	err := bcrypt.CompareHashAndPassword([]byte(hashedPwd), []byte(password))
+	if err != nil {
+		return err
 	}
-	return false
+	return nil
 }

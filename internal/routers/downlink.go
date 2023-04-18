@@ -2,6 +2,7 @@ package routers
 
 import (
 	"github.com/HelliWrold1/cloud/internal/handler"
+	"github.com/zhufuyi/sponge/pkg/gin/middleware"
 
 	"github.com/gin-gonic/gin"
 )
@@ -13,11 +14,11 @@ func init() {
 }
 
 func downlinkRouter(group *gin.RouterGroup, h handler.DownlinkHandler) {
-	group.POST("/downlink", h.Create)
-	group.DELETE("/downlink/:id", h.DeleteByID)
-	group.POST("/downlinks/delete/ids", h.DeleteByIDs)
-	group.PUT("/downlink/:id", h.UpdateByID)
-	group.GET("/downlink/:id", h.GetByID)
-	group.POST("/downlinks/ids", h.ListByIDs)
-	group.POST("/downlinks", h.List)
+	group.POST("/downlink", middleware.Auth(), h.Create)
+	group.DELETE("/downlink/:id", middleware.Auth(), h.DeleteByID)
+	group.POST("/downlinks/delete/ids", middleware.Auth(), h.DeleteByIDs)
+	group.PUT("/downlink/:id", middleware.Auth(), h.UpdateByID)
+	group.GET("/downlink/:id", middleware.Auth(), h.GetByID)
+	group.POST("/downlinks/ids", middleware.Auth(), h.ListByIDs)
+	group.POST("/downlinks", middleware.Auth(), h.List)
 }

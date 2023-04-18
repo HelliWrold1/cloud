@@ -52,6 +52,7 @@ func NewDownlinkHandler() DownlinkHandler {
 // @Tags downlink
 // @accept json
 // @Produce json
+// @Security BearerTokenAuth
 // @Param data body types.CreateDownlinkRequest true "downlink information"
 // @Success 200 {object} types.Result{}
 // @Router /api/v1/downlink [post]
@@ -87,6 +88,7 @@ func (h *downlinkHandler) Create(c *gin.Context) {
 // @Tags downlink
 // @accept json
 // @Produce json
+// @Security BearerTokenAuth
 // @Param id path string true "id"
 // @Success 200 {object} types.Result{}
 // @Router /api/v1/downlink/{id} [delete]
@@ -110,6 +112,7 @@ func (h *downlinkHandler) DeleteByID(c *gin.Context) {
 // @Summary delete downlinks by multiple id
 // @Description delete downlinks by multiple id using a post request
 // @Tags downlink
+// @Security BearerTokenAuth
 // @Param data body types.DeleteDownlinksByIDsRequest true "id array"
 // @Accept json
 // @Produce json
@@ -140,6 +143,7 @@ func (h *downlinkHandler) DeleteByIDs(c *gin.Context) {
 // @Tags downlink
 // @accept json
 // @Produce json
+// @Security BearerTokenAuth
 // @Param id path string true "id"
 // @Param data body types.UpdateDownlinkByIDRequest true "downlink information"
 // @Success 200 {object} types.Result{}
@@ -180,6 +184,7 @@ func (h *downlinkHandler) UpdateByID(c *gin.Context) {
 // @Summary get downlink details
 // @Description get downlink details by id
 // @Tags downlink
+// @Security BearerTokenAuth
 // @Param id path string true "id"
 // @Accept json
 // @Produce json
@@ -218,6 +223,7 @@ func (h *downlinkHandler) GetByID(c *gin.Context) {
 // @Summary get downlinks by multiple id
 // @Description get downlinks by multiple id using a post request
 // @Tags downlink
+// @Security BearerTokenAuth
 // @Param data body types.GetDownlinksByIDsRequest true "id array"
 // @Accept json
 // @Produce json
@@ -257,6 +263,7 @@ func (h *downlinkHandler) ListByIDs(c *gin.Context) {
 // @Tags downlink
 // @accept json
 // @Produce json
+// @Security BearerTokenAuth
 // @Param data body types.Params true "query parameters"
 // @Success 200 {object} types.Result{}
 // @Router /api/v1/downlinks [post]

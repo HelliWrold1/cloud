@@ -49,6 +49,7 @@ func NewMQTTHandler() MQTTHandler {
 // @Tags MQTT
 // @accept json
 // @Produce json
+// @Security BearerTokenAuth
 // @Param data body types.MQTTPublishRequest true "mqtt information"
 // @Success 200 {object} types.Result{}
 // @Router /api/v1/mqtt/publish [post]

@@ -52,6 +52,7 @@ func NewFrameHandler() FrameHandler {
 // @Tags frame
 // @accept json
 // @Produce json
+// @Security BearerTokenAuth
 // @Param data body types.CreateFrameRequest true "frame information"
 // @Success 200 {object} types.Result{}
 // @Router /api/v1/frame [post]
@@ -87,6 +88,7 @@ func (h *frameHandler) Create(c *gin.Context) {
 // @Tags frame
 // @accept json
 // @Produce json
+// @Security BearerTokenAuth
 // @Param id path string true "id"
 // @Success 200 {object} types.Result{}
 // @Router /api/v1/frame/{id} [delete]
@@ -110,6 +112,7 @@ func (h *frameHandler) DeleteByID(c *gin.Context) {
 // @Summary delete frames by multiple id
 // @Description delete frames by multiple id using a post request
 // @Tags frame
+// @Security BearerTokenAuth
 // @Param data body types.DeleteFramesByIDsRequest true "id array"
 // @Accept json
 // @Produce json
@@ -140,6 +143,7 @@ func (h *frameHandler) DeleteByIDs(c *gin.Context) {
 // @Tags frame
 // @accept json
 // @Produce json
+// @Security BearerTokenAuth
 // @Param id path string true "id"
 // @Param data body types.UpdateFrameByIDRequest true "frame information"
 // @Success 200 {object} types.Result{}
@@ -180,6 +184,7 @@ func (h *frameHandler) UpdateByID(c *gin.Context) {
 // @Summary get frame details
 // @Description get frame details by id
 // @Tags frame
+// @Security BearerTokenAuth
 // @Param id path string true "id"
 // @Accept json
 // @Produce json
@@ -218,6 +223,7 @@ func (h *frameHandler) GetByID(c *gin.Context) {
 // @Summary get frames by multiple id
 // @Description get frames by multiple id using a post request
 // @Tags frame
+// @Security BearerTokenAuth
 // @Param data body types.GetFramesByIDsRequest true "id array"
 // @Accept json
 // @Produce json
@@ -257,6 +263,7 @@ func (h *frameHandler) ListByIDs(c *gin.Context) {
 // @Tags frame
 // @accept json
 // @Produce json
+// @Security BearerTokenAuth
 // @Param data body types.Params true "query parameters"
 // @Success 200 {object} types.Result{}
 // @Router /api/v1/frames [post]

@@ -30,7 +30,8 @@ type UserDao interface {
 	GetByIDs(ctx context.Context, ids []uint64) ([]*model.User, error)
 	GetByColumns(ctx context.Context, params *query.Params) ([]*model.User, int64, error)
 	ExistUserByUsername(ctx context.Context, username string) (*model.User, bool)
-	UpdateByUsernamePasswordToNew(ctx context.Context, username string, oldPwd string, newPwd string) error
+	UpdateByIDPasswordToNew(ctx context.Context, uid uint64, newPwd string) error
+	QueryUserByUsername(ctx context.Context, username string) (*model.User, error)
 }
 
 type userDao struct {
@@ -275,10 +276,19 @@ func (d *userDao) ExistUserByUsername(ctx context.Context, username string) (*mo
 	return record, true
 }
 
-func (d *userDao) UpdateByUsernamePasswordToNew(ctx context.Context, username string, oldPwd string, newPwd string) error {
-	err := d.db.WithContext(ctx).Update("password", newPwd).Where("username = ? AND password = ?", username, oldPwd).Error
+func (d *userDao) UpdateByIDPasswordToNew(ctx context.Context, uid uint64, newPwd string) error {
+	err := d.db.WithContext(ctx).Update("password", newPwd).Where("id = ?", uid).Error
 	if err != nil {
 		return err
 	}
 	return nil
+}
+
+func (d *userDao) QueryUserByUsername(ctx context.Context, username string) (*model.User, error) {
+	record := &model.User{}
+	err := d.db.WithContext(ctx).First(record).Where("username = ?", username).Error
+	if err != nil {
+		return nil, err
+	}
+	return record, nil
 }

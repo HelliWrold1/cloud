@@ -3,6 +3,7 @@ package handler
 import (
 	"errors"
 	"github.com/HelliWrold1/cloud/internal/crypt"
+	"github.com/zhufuyi/sponge/pkg/jwt"
 
 	"github.com/HelliWrold1/cloud/internal/cache"
 	"github.com/HelliWrold1/cloud/internal/dao"
@@ -32,7 +33,7 @@ type UserHandler interface {
 	ListByIDs(c *gin.Context)
 	List(c *gin.Context)
 	LoginUser(c *gin.Context)
-	UpdateByUsernamePasswordToNew(c *gin.Context)
+	UpdateByUserPasswordToNew(c *gin.Context)
 }
 
 type userHandler struct {
@@ -57,7 +58,7 @@ func NewUserHandler() UserHandler {
 // @Produce json
 // @Param data body types.CreateUserRequest true "user information"
 // @Success 200 {object} types.Result{}
-// @Router /api/v1/user [post]
+// @Router /api/v1/user/register [post]
 func (h *userHandler) Create(c *gin.Context) {
 	form := &types.CreateUserRequest{}
 	err := c.ShouldBindJSON(form)
@@ -81,7 +82,13 @@ func (h *userHandler) Create(c *gin.Context) {
 		response.Output(c, ecode.AlreadyExists.ToHTTPCode())
 	}
 	// 不存在则创建
-	user.Password = crypt.SetPwd(user.Password) // 加密密码
+	cryptedPwd, err := crypt.GenerateSaltPwd(user.Password) // 加密密码
+	if err != nil {
+		logger.Error("Crypt error", logger.Err(err), logger.Any("form", form), middleware.GCtxRequestIDField(c))
+		response.Output(c, ecode.InternalServerError.ToHTTPCode())
+		return
+	}
+	user.Password = cryptedPwd
 	err = h.iDao.Create(c.Request.Context(), user)
 	if err != nil {
 		logger.Error("Create error", logger.Err(err), logger.Any("form", form), middleware.GCtxRequestIDField(c))
@@ -89,7 +96,13 @@ func (h *userHandler) Create(c *gin.Context) {
 		return
 	}
 
-	response.Success(c, gin.H{"id": user.ID})
+	token, err := jwt.GenerateToken(utils.Uint64ToStr(user.ID), user.Username)
+	if err != nil {
+		logger.Error("Token error", logger.Err(err), logger.Any("form", form), middleware.GCtxRequestIDField(c))
+		response.Output(c, ecode.InternalServerError.ToHTTPCode())
+		return
+	}
+	response.Success(c, gin.H{"id": user.ID, "username": user.Username, "token": token})
 }
 
 // DeleteByID delete a record by ID
@@ -99,6 +112,7 @@ func (h *userHandler) Create(c *gin.Context) {
 // @accept json
 // @Produce json
 // @Param id path string true "id"
+// @Security BearerTokenAuth
 // @Success 200 {object} types.Result{}
 // @Router /api/v1/user/{id} [delete]
 func (h *userHandler) DeleteByID(c *gin.Context) {
@@ -122,6 +136,7 @@ func (h *userHandler) DeleteByID(c *gin.Context) {
 // @Description delete users by multiple id using a post request
 // @Tags user
 // @Param data body types.DeleteUsersByIDsRequest true "id array"
+// @Security BearerTokenAuth
 // @Accept json
 // @Produce json
 // @Success 200 {object} types.Result{}
@@ -152,6 +167,7 @@ func (h *userHandler) DeleteByIDs(c *gin.Context) {
 // @accept json
 // @Produce json
 // @Param id path string true "id"
+// @Security BearerTokenAuth
 // @Param data body types.UpdateUserByIDRequest true "user information"
 // @Success 200 {object} types.Result{}
 // @Router /api/v1/user/{id} [put]
@@ -191,6 +207,7 @@ func (h *userHandler) UpdateByID(c *gin.Context) {
 // @Summary get user details
 // @Description get user details by id
 // @Tags user
+// @Security BearerTokenAuth
 // @Param id path string true "id"
 // @Accept json
 // @Produce json
@@ -229,6 +246,7 @@ func (h *userHandler) GetByID(c *gin.Context) {
 // @Summary get users by multiple id
 // @Description get users by multiple id using a post request
 // @Tags user
+// @Security BearerTokenAuth
 // @Param data body types.GetUsersByIDsRequest true "id array"
 // @Accept json
 // @Produce json
@@ -268,6 +286,7 @@ func (h *userHandler) ListByIDs(c *gin.Context) {
 // @Tags user
 // @accept json
 // @Produce json
+// @Security BearerTokenAuth
 // @Param data body types.Params true "query parameters"
 // @Success 200 {object} types.Result{}
 // @Router /api/v1/users [post]
@@ -299,16 +318,17 @@ func (h *userHandler) List(c *gin.Context) {
 	})
 }
 
-// UpdateByUsernamePasswordToNew Update user's password
+// UpdateByUserPasswordToNew Update user's password
 // @Summary update user's password to new
 // @Description update user's password to new
 // @Tags user
 // @accept json
 // @Produce json
+// @Security BearerTokenAuth
 // @Param data body types.UpdateUserPasswordRequest true "user information and new password"
 // @Success 200 {object} types.Result{}
 // @Router /api/v1/user/update [put]
-func (h *userHandler) UpdateByUsernamePasswordToNew(c *gin.Context) {
+func (h *userHandler) UpdateByUserPasswordToNew(c *gin.Context) {
 	form := &types.UpdateUserPasswordRequest{}
 	err := c.ShouldBindJSON(form)
 	if err != nil {
@@ -316,16 +336,35 @@ func (h *userHandler) UpdateByUsernamePasswordToNew(c *gin.Context) {
 		response.Error(c, ecode.InvalidParams)
 		return
 	}
+
 	username := c.Param("username")
 	oldPwd := c.Param("old_password")
 	newPwd := c.Param("new_password")
-
-	cryptedOldPwd := crypt.SetPwd(oldPwd)
-	cryptedNewPwd := crypt.SetPwd(newPwd)
-	err = h.iDao.UpdateByUsernamePasswordToNew(c, username, cryptedOldPwd, cryptedNewPwd)
+	// 查询用户是否存在
+	user, err := h.iDao.QueryUserByUsername(c, username)
+	if err != nil {
+		logger.Error("User Not Found", logger.Err(err), middleware.GCtxRequestIDField(c))
+		response.Error(c, ecode.AccessDenied)
+		return
+	}
+	// 对比用户输入的旧密码与数据库内的旧密码
+	err = crypt.CheckSaltPwd(oldPwd, user.Password)
 	if err != nil {
 		logger.Error("AccessDenied", logger.Err(err), middleware.GCtxRequestIDField(c))
 		response.Error(c, ecode.AccessDenied)
+		return
+	}
+	// 给新密码加盐
+	cryptedNewPwd, err := crypt.GenerateSaltPwd(newPwd)
+	if err != nil {
+		logger.Error("AccessDenied", logger.Err(err), middleware.GCtxRequestIDField(c))
+		response.Error(c, ecode.Unauthorized)
+	}
+	// 将加盐后的新密码存入数据库
+	err = h.iDao.UpdateByIDPasswordToNew(c, user.ID, cryptedNewPwd)
+	if err != nil {
+		logger.Error("ErrUpdateUser", logger.Err(err), middleware.GCtxRequestIDField(c))
+		response.Error(c, ecode.ErrUpdateUser)
 		return
 	}
 	data := &types.UpdateUserPasswordResponse{
@@ -335,8 +374,46 @@ func (h *userHandler) UpdateByUsernamePasswordToNew(c *gin.Context) {
 	response.Success(c, gin.H{"user": data})
 }
 
+// LoginUser Update user's password
+// @Summary login user
+// @Description login user
+// @Tags user
+// @accept json
+// @Produce json
+// @Param data body types.LoginUserRequest true "user information and new password"
+// @Success 200 {object} types.Result{}
+// @Router /api/v1/user/login [post]
 func (h *userHandler) LoginUser(c *gin.Context) {
+	form := &types.LoginUserRequest{}
+	err := c.ShouldBindJSON(form)
+	if err != nil {
+		logger.Warn("ShouldBindJSON error: ", logger.Err(err), middleware.GCtxRequestIDField(c))
+		response.Error(c, ecode.InvalidParams)
+		return
+	}
 
+	user, err := h.iDao.QueryUserByUsername(c, form.Username)
+	if err != nil {
+		logger.Error("AccessDenied", logger.Err(err), middleware.GCtxRequestIDField(c))
+		response.Error(c, ecode.ErrGetUser)
+		return
+	}
+	err = crypt.CheckSaltPwd(form.Password, user.Password)
+	logger.Info(form.Username)
+	logger.Info(form.Password)
+	logger.Info(user.Password)
+	if err != nil {
+		logger.Error("Unauthorized", logger.Err(err), middleware.GCtxRequestIDField(c))
+		response.Error(c, ecode.Unauthorized)
+		return
+	}
+	token, err := jwt.GenerateToken(utils.Uint64ToStr(user.ID), form.Username)
+	if err != nil {
+		logger.Error("Token Error", logger.Err(err), middleware.GCtxRequestIDField(c))
+		response.Error(c, ecode.AccessDenied)
+		return
+	}
+	response.Success(c, gin.H{"username": user.Username, "token": token})
 }
 
 func getUserIDFromPath(c *gin.Context) (string, uint64, bool) {

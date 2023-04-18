@@ -2,6 +2,7 @@ package routers
 
 import (
 	"github.com/HelliWrold1/cloud/internal/handler"
+	"github.com/zhufuyi/sponge/pkg/gin/middleware"
 
 	"github.com/gin-gonic/gin"
 )
@@ -13,5 +14,5 @@ func init() {
 }
 
 func MQTTRouter(group *gin.RouterGroup, h handler.MQTTHandler) {
-	group.POST("/mqtt/publish", h.Publish)
+	group.POST("/mqtt/publish", middleware.Auth(), h.Publish)
 }
