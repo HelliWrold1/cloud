@@ -60,8 +60,25 @@ func (u mock) GetByID(c *gin.Context)     { return }
 func (u mock) ListByIDs(c *gin.Context)   { return }
 func (u mock) List(c *gin.Context)        { return }
 
+type mqttMock struct {
+}
+
+func (m mqttMock) Publish(ctx *gin.Context)   { return }
+func (m mqttMock) Subscribe(ctx *gin.Context) { return }
+
 func Test_frameRouter(t *testing.T) {
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
 	frameRouter(r.Group("/"), &mock{})
+}
+
+func Test_downlinkRouter(f *testing.T) {
+	gin.SetMode(gin.ReleaseMode)
+	r := gin.Default()
+	downlinkRouter(r.Group("/"), &mock{})
+}
+func Test_MQTTRouter(f *testing.T) {
+	gin.SetMode(gin.ReleaseMode)
+	r := gin.Default()
+	MQTTRouter(r.Group("/"), &mqttMock{})
 }

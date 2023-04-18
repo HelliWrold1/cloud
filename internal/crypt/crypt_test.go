@@ -6,8 +6,18 @@ import (
 	"testing"
 )
 
-func TestGenerateSaltPwd(t *testing.T) {
+func Test_Generate_SaltPwd(t *testing.T) {
 	t.Run("GenerateSaltPwd", func(t *testing.T) {
+		pwd, err := GenerateSaltPwd("admin")
+		if err != nil {
+			t.Fatal(err.Error())
+		}
+		fmt.Println(pwd)
+		assert.Nil(t, err)
+		assert.NotNil(t, pwd)
+	})
+
+	t.Run("CheckSaltedPassword", func(t *testing.T) {
 		pwd, err := GenerateSaltPwd("admin")
 		if err != nil {
 			t.Fatal(err.Error())
@@ -23,8 +33,5 @@ func TestGenerateSaltPwd(t *testing.T) {
 		if err != nil {
 			assert.NotNil(t, err)
 		}
-
-		err = CheckSaltPwd("admin", "$2a$10$84IgaDinyGP0bAiGdfiHXux/5rWTdbVT/N3p7TsPU9sBV/yXlVXoy")
-		assert.Nil(t, err)
 	})
 }

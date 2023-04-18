@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"github.com/zhufuyi/sponge/pkg/jwt"
 	"net/http"
 	"testing"
 	"time"
@@ -21,6 +22,7 @@ import (
 )
 
 func newUserHandler() *gotest.Handler {
+	jwt.Init()
 	// todo additional test field information
 	testData := &model.User{}
 	testData.ID = 1
