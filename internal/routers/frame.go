@@ -14,10 +14,10 @@ func init() {
 }
 
 func frameRouter(group *gin.RouterGroup, h handler.FrameHandler) {
-	group.POST("/frame", middleware.Auth(), h.Create)
-	group.DELETE("/frame/:id", middleware.Auth(), h.DeleteByID)
-	group.POST("/frames/delete/ids", middleware.Auth(), h.DeleteByIDs)
-	group.PUT("/frame/:id", middleware.Auth(), h.UpdateByID)
+	group.POST("/frame", middleware.AuthAdmin(), h.Create)
+	group.DELETE("/frame/:id", middleware.AuthAdmin(), h.DeleteByID)
+	group.POST("/frames/delete/ids", middleware.AuthAdmin(), h.DeleteByIDs)
+	group.PUT("/frame/:id", middleware.AuthAdmin(), h.UpdateByID)
 	group.GET("/frame/:id", h.GetByID)
 	group.POST("/frames/ids", h.ListByIDs)
 	group.POST("/frames", h.List)

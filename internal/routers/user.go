@@ -15,12 +15,14 @@ func init() {
 
 func userRouter(group *gin.RouterGroup, h handler.UserHandler) {
 	group.POST("/user/register", h.Create)
-	group.DELETE("/user/:id", middleware.Auth(), h.DeleteByID)
-	group.POST("/users/delete/ids", middleware.Auth(), h.DeleteByIDs)
-	group.PUT("/user/:id", middleware.Auth(), h.UpdateByID)
-	group.GET("/user/:id", middleware.Auth(), h.GetByID)
-	group.POST("/users/ids", middleware.Auth(), h.ListByIDs)
-	group.POST("/users", middleware.Auth(), h.List)
+	group.DELETE("/user/:id", middleware.AuthAdmin(), h.DeleteByID)
+	group.POST("/users/delete/ids", middleware.AuthAdmin(), h.DeleteByIDs)
+	group.PUT("/user/:id", middleware.AuthAdmin(), h.UpdateByID)
+	group.GET("/user/:id", middleware.AuthAdmin(), h.GetByID)
+	group.POST("/users/ids", middleware.AuthAdmin(), h.ListByIDs)
+	group.POST("/users", middleware.AuthAdmin(), h.List)
 	group.POST("/user/login", h.LoginUser)
 	group.PUT("/user/update", middleware.Auth(), h.UpdateByUserPasswordToNew)
+	group.GET("/user/info", middleware.Auth(), h.GetUserInfo)
+	group.POST("/user/logout", middleware.Auth(), h.LogoutUser)
 }

@@ -34,6 +34,8 @@ type UserHandler interface {
 	List(c *gin.Context)
 	LoginUser(c *gin.Context)
 	UpdateByUserPasswordToNew(c *gin.Context)
+	GetUserInfo(c *gin.Context)
+	LogoutUser(c *gin.Context)
 }
 
 type userHandler struct {
@@ -265,7 +267,6 @@ func (h *userHandler) ListByIDs(c *gin.Context) {
 	if err != nil {
 		logger.Error("GetByIDs error", logger.Err(err), logger.Any("form", form), middleware.GCtxRequestIDField(c))
 		response.Output(c, ecode.InternalServerError.ToHTTPCode())
-
 		return
 	}
 
@@ -356,6 +357,7 @@ func (h *userHandler) UpdateByUserPasswordToNew(c *gin.Context) {
 	if err != nil {
 		logger.Error("AccessDenied", logger.Err(err), middleware.GCtxRequestIDField(c))
 		response.Error(c, ecode.Unauthorized)
+		return
 	}
 	// 将加盐后的新密码存入数据库
 	err = h.iDao.UpdateByIDPasswordToNew(c, user.ID, cryptedNewPwd)
@@ -396,12 +398,13 @@ func (h *userHandler) LoginUser(c *gin.Context) {
 		return
 	}
 	err = crypt.CheckSaltPwd(form.Password, user.Password)
+	logger.Info(utils.Uint64ToStr(user.ID))
 	logger.Info(form.Username)
 	logger.Info(form.Password)
 	logger.Info(user.Password)
 	if err != nil {
 		logger.Error("Unauthorized", logger.Err(err), middleware.GCtxRequestIDField(c))
-		response.Error(c, ecode.Unauthorized)
+		response.Error(c, ecode.AccessDenied)
 		return
 	}
 	token, err := jwt.GenerateToken(utils.Uint64ToStr(user.ID), form.Username)
@@ -410,7 +413,70 @@ func (h *userHandler) LoginUser(c *gin.Context) {
 		response.Error(c, ecode.AccessDenied)
 		return
 	}
-	response.Success(c, gin.H{"username": user.Username, "token": token})
+	response.Success(c, gin.H{"uid": user.ID, "token": token})
+}
+
+// GetUserInfo get a record by uid
+// @Summary get user details
+// @Description get user details by uid
+// @Tags user
+// @Security BearerTokenAuth
+// @Accept json
+// @Produce json
+// @Success 200 {object} types.Result{}
+// @Router /api/v1/user/info [get]
+func (h *userHandler) GetUserInfo(c *gin.Context) {
+	uidAny, exist := c.Get("uid")
+	if !exist {
+		logger.Error("GetUID error", middleware.GCtxRequestIDField(c))
+		response.Error(c, ecode.Unauthorized)
+	}
+	uidStr := uidAny.(string)
+	uid, err := utils.StrToUint64E(uidStr)
+	if err != nil {
+		logger.Error("GetUID error", logger.Err(err), logger.Any("uid", uid), middleware.GCtxRequestIDField(c))
+		response.Error(c, ecode.Unauthorized)
+	}
+
+	user, err := h.iDao.GetByID(c.Request.Context(), uid)
+	if err != nil {
+		if errors.Is(err, query.ErrNotFound) {
+			logger.Warn("GetUserInfo not found", logger.Err(err), logger.Any("uid", uid), middleware.GCtxRequestIDField(c))
+			response.Error(c, ecode.Unauthorized)
+		} else {
+			logger.Error("GetUserInfo error", logger.Err(err), logger.Any("uid", uid), middleware.GCtxRequestIDField(c))
+			response.Error(c, ecode.Unauthorized)
+		}
+		return
+	}
+	data := &types.GetUserByIDRespond{}
+	err = copier.Copy(data, user)
+	if err != nil {
+		response.Error(c, ecode.Unauthorized)
+		return
+	}
+	data.ID = uidStr
+	logger.Info(data.ID)
+	response.Success(c, gin.H{"user": data})
+}
+
+// LogoutUser delete c.Context's key uid
+// @Summary delete c.Context's key uid
+// @Description delete c.Context's key uid
+// @Tags user
+// @Security BearerTokenAuth
+// @Accept json
+// @Produce json
+// @Success 200 {object} types.Result{}
+// @Router /api/v1/user/logout [post]
+func (h *userHandler) LogoutUser(c *gin.Context) {
+	keys := c.Keys
+	uid, exist := c.Get("uid")
+	if exist {
+		delete(keys, "uid")
+		logger.Info("in delete")
+		response.Success(c, gin.H{"uid": uid.(string)})
+	}
 }
 
 func getUserIDFromPath(c *gin.Context) (string, uint64, bool) {

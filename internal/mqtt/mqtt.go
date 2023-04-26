@@ -8,11 +8,13 @@ import (
 	"github.com/HelliWrold1/cloud/internal/model"
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	jsoniter "github.com/json-iterator/go"
+	"github.com/zhufuyi/sponge/pkg/logger"
 	"github.com/zhufuyi/sponge/pkg/mysql"
 	"time"
 )
 
 var frameDao dao.FrameDao
+var downlinkDao dao.DownlinkDao
 
 var client MQTT.Client
 var uplinkToCloud string = "uplinkToCloud"
@@ -37,6 +39,11 @@ func Init() error {
 	frameDao = dao.NewFrameDao(
 		model.GetDB(),
 		cache.NewFrameCache(model.GetCacheType()),
+	)
+
+	downlinkDao = dao.NewDownlinkDao(
+		model.GetDB(),
+		cache.NewDownlinkCache(model.GetCacheType()),
 	)
 
 	opts := MQTT.NewClientOptions().AddBroker("tcp://localhost:1883")
@@ -93,18 +100,22 @@ func messageReceivedCallback(client MQTT.Client, message MQTT.Message) {
 			fmt.Println(err.Error())
 			return
 		}
-		dateType, _ := obj["datetype"].(int)
+		dataType, exist := obj["datatype"].(float64)
 		devAddr, _ := obj["devaddr"].(string)
 		gatewayMac, _ := obj["mac"].(string)
 		utcTimeStr, _ := obj["datetime"].(string)
 		utcTime, _ := time.Parse("2006-01-02T15:04:05Z", utcTimeStr)
+		if !exist {
+			logger.Info("datatype not exist")
+			return
+		}
 		err = frameDao.Create(context.Background(), &model.Frame{
 			Model: mysql.Model{
 				CreatedAt: utcTime, // 插入的是utcTime, 框架会自动把UTC时间转换为localtime存入数据库
 			},
 			Frame:      payloadStr,
 			DevAddr:    devAddr,
-			DataType:   dateType,
+			DataType:   int(dataType),
 			GatewayMac: gatewayMac,
 		})
 		if err != nil {

@@ -584,6 +584,34 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/user/info": {
+            "get": {
+                "security": [
+                    {
+                        "BearerTokenAuth": []
+                    }
+                ],
+                "description": "get user details by uid",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "get user details",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.Result"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/user/login": {
             "post": {
                 "description": "login user",
@@ -608,6 +636,34 @@ const docTemplate = `{
                         }
                     }
                 ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/user/logout": {
+            "post": {
+                "security": [
+                    {
+                        "BearerTokenAuth": []
+                    }
+                ],
+                "description": "delete c.Context's key uid",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "delete c.Context's key uid",
                 "responses": {
                     "200": {
                         "description": "OK",
