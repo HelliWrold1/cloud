@@ -9,3 +9,13 @@ type MQTTPublishRequest struct {
 
 type MQTTPublishResponse struct {
 }
+
+type MQTTSubscribeRequest struct {
+	Topic string `json:"topic"`
+	Qos   byte   `json:"qos"`
+}
+
+type MQTTUnsubscribeRequest struct {
+	Topic string `json:"topic"`
+	Qos   byte   `json:"qos"`
+}

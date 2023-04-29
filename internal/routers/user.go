@@ -14,7 +14,7 @@ func init() {
 }
 
 func userRouter(group *gin.RouterGroup, h handler.UserHandler) {
-	group.POST("/user/register", h.Create)
+	group.POST("/user/register", middleware.AuthAdmin(), h.Create)
 	group.DELETE("/user/:id", middleware.AuthAdmin(), h.DeleteByID)
 	group.POST("/users/delete/ids", middleware.AuthAdmin(), h.DeleteByIDs)
 	group.PUT("/user/:id", middleware.AuthAdmin(), h.UpdateByID)

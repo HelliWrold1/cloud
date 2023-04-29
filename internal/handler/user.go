@@ -59,6 +59,7 @@ func NewUserHandler() UserHandler {
 // @accept json
 // @Produce json
 // @Param data body types.CreateUserRequest true "user information"
+// @Security BearerTokenAuth
 // @Success 200 {object} types.Result{}
 // @Router /api/v1/user/register [post]
 func (h *userHandler) Create(c *gin.Context) {
@@ -80,28 +81,29 @@ func (h *userHandler) Create(c *gin.Context) {
 	// 查找用户是否已存在
 	_, exist := h.iDao.ExistUserByUsername(c.Request.Context(), user.Username)
 	if exist {
-		logger.Error("Create error", logger.Err(err), logger.Any("form", form), middleware.GCtxRequestIDField(c))
-		response.Output(c, ecode.AlreadyExists.ToHTTPCode())
+		logger.Error("User already exist", logger.Err(err), logger.Any("form", form), middleware.GCtxRequestIDField(c))
+		response.Error(c, ecode.ErrCreateUser, "User already exist")
+		return
 	}
 	// 不存在则创建
 	cryptedPwd, err := crypt.GenerateSaltPwd(user.Password) // 加密密码
 	if err != nil {
 		logger.Error("Crypt error", logger.Err(err), logger.Any("form", form), middleware.GCtxRequestIDField(c))
-		response.Output(c, ecode.InternalServerError.ToHTTPCode())
+		response.Error(c, ecode.ErrCreateUser)
 		return
 	}
 	user.Password = cryptedPwd
 	err = h.iDao.Create(c.Request.Context(), user)
 	if err != nil {
 		logger.Error("Create error", logger.Err(err), logger.Any("form", form), middleware.GCtxRequestIDField(c))
-		response.Output(c, ecode.InternalServerError.ToHTTPCode())
+		response.Error(c, ecode.ErrCreateUser)
 		return
 	}
 
 	token, err := jwt.GenerateToken(utils.Uint64ToStr(user.ID), user.Username)
 	if err != nil {
 		logger.Error("Token error", logger.Err(err), logger.Any("form", form), middleware.GCtxRequestIDField(c))
-		response.Output(c, ecode.InternalServerError.ToHTTPCode())
+		response.Error(c, ecode.ErrCreateUser)
 		return
 	}
 	response.Success(c, gin.H{"id": user.ID, "username": user.Username, "token": token})
@@ -195,6 +197,13 @@ func (h *userHandler) UpdateByID(c *gin.Context) {
 		return
 	}
 
+	user.Password, err = crypt.GenerateSaltPwd(form.Password) // 给新密码加盐
+	if err != nil {
+		logger.Error("UpdateByID error", logger.Err(err), logger.Any("form", form), middleware.GCtxRequestIDField(c))
+		response.Output(c, ecode.InternalServerError.ToHTTPCode())
+		return
+	}
+
 	err = h.iDao.UpdateByID(c.Request.Context(), user)
 	if err != nil {
 		logger.Error("UpdateByID error", logger.Err(err), logger.Any("form", form), middleware.GCtxRequestIDField(c))
@@ -214,6 +223,7 @@ func (h *userHandler) UpdateByID(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Success 200 {object} types.Result{}
+// @Security BearerTokenAuth
 // @Router /api/v1/user/{id} [get]
 func (h *userHandler) GetByID(c *gin.Context) {
 	idStr, id, isAbort := getUserIDFromPath(c)
@@ -253,6 +263,7 @@ func (h *userHandler) GetByID(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Success 200 {object} types.Result{}
+// @Security BearerTokenAuth
 // @Router /api/v1/users/ids [post]
 func (h *userHandler) ListByIDs(c *gin.Context) {
 	form := &types.GetUsersByIDsRequest{}
@@ -345,6 +356,8 @@ func (h *userHandler) UpdateByUserPasswordToNew(c *gin.Context) {
 		response.Error(c, ecode.AccessDenied)
 		return
 	}
+	logger.Info(form.OldPassword)
+	logger.Info(user.Password)
 	// 对比用户输入的旧密码与数据库内的旧密码
 	err = crypt.CheckSaltPwd(form.OldPassword, user.Password)
 	if err != nil {

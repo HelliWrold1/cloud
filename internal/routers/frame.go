@@ -18,7 +18,7 @@ func frameRouter(group *gin.RouterGroup, h handler.FrameHandler) {
 	group.DELETE("/frame/:id", middleware.AuthAdmin(), h.DeleteByID)
 	group.POST("/frames/delete/ids", middleware.AuthAdmin(), h.DeleteByIDs)
 	group.PUT("/frame/:id", middleware.AuthAdmin(), h.UpdateByID)
-	group.GET("/frame/:id", h.GetByID)
-	group.POST("/frames/ids", h.ListByIDs)
-	group.POST("/frames", h.List)
+	group.GET("/frame/:id", middleware.Auth(), h.GetByID)
+	group.POST("/frames/ids", middleware.Auth(), h.ListByIDs)
+	group.POST("/frames", middleware.Auth(), h.List)
 }

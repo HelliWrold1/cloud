@@ -584,6 +584,84 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/mqtt/subscribe": {
+            "post": {
+                "security": [
+                    {
+                        "BearerTokenAuth": []
+                    }
+                ],
+                "description": "submit information to subscribe mqtt message",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "MQTT"
+                ],
+                "summary": "subscribe mqtt topic",
+                "parameters": [
+                    {
+                        "description": "mqtt information",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.MQTTSubscribeRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.Result"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/mqtt/unsubscribe": {
+            "post": {
+                "security": [
+                    {
+                        "BearerTokenAuth": []
+                    }
+                ],
+                "description": "submit information to unsubscribe mqtt message",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "MQTT"
+                ],
+                "summary": "unsubscribe mqtt topic",
+                "parameters": [
+                    {
+                        "description": "mqtt information",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.MQTTUnsubscribeRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.Result"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/user/info": {
             "get": {
                 "security": [
@@ -676,6 +754,11 @@ const docTemplate = `{
         },
         "/api/v1/user/register": {
             "post": {
+                "security": [
+                    {
+                        "BearerTokenAuth": []
+                    }
+                ],
                 "description": "submit information to register user",
                 "consumes": [
                     "application/json"
@@ -750,6 +833,9 @@ const docTemplate = `{
         "/api/v1/user/{id}": {
             "get": {
                 "security": [
+                    {
+                        "BearerTokenAuth": []
+                    },
                     {
                         "BearerTokenAuth": []
                     }
@@ -944,6 +1030,9 @@ const docTemplate = `{
         "/api/v1/users/ids": {
             "post": {
                 "security": [
+                    {
+                        "BearerTokenAuth": []
+                    },
                     {
                         "BearerTokenAuth": []
                     }
@@ -1141,6 +1230,28 @@ const docTemplate = `{
                 },
                 "retain": {
                     "type": "boolean"
+                },
+                "topic": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.MQTTSubscribeRequest": {
+            "type": "object",
+            "properties": {
+                "qos": {
+                    "type": "integer"
+                },
+                "topic": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.MQTTUnsubscribeRequest": {
+            "type": "object",
+            "properties": {
+                "qos": {
+                    "type": "integer"
                 },
                 "topic": {
                     "type": "string"

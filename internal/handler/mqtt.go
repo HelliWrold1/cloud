@@ -24,6 +24,7 @@ var _ MQTTHandler = (*mqttHandler)(nil)
 type MQTTHandler interface {
 	Publish(ctx *gin.Context)
 	Subscribe(ctx *gin.Context)
+	Unsubscribe(ctx *gin.Context)
 }
 
 type mqttHandler struct {
@@ -108,6 +109,60 @@ func (h *mqttHandler) Publish(c *gin.Context) {
 	response.Success(c)
 }
 
-func (h *mqttHandler) Subscribe(ctx *gin.Context) {
+// Subscribe a MQTT topic
+// @Summary subscribe mqtt topic
+// @Description submit information to subscribe mqtt message
+// @Tags MQTT
+// @accept json
+// @Produce json
+// @Security BearerTokenAuth
+// @Param data body types.MQTTSubscribeRequest true "mqtt information"
+// @Success 200 {object} types.Result{}
+// @Router /api/v1/mqtt/subscribe [post]
+func (h *mqttHandler) Subscribe(c *gin.Context) {
+	form := &types.MQTTSubscribeRequest{}
+	err := c.ShouldBindJSON(form)
+	if err != nil {
+		logger.Warn("ShouldBindJSON error: ", logger.Err(err), middleware.GCtxRequestIDField(c))
+		response.Error(c, ecode.InvalidParams)
+		return
+	}
 
+	subTopicInfo := &MQTT.SubTopicInfo{}
+	err = copier.Copy(subTopicInfo, form)
+	err = MQTT.Subscribe(*subTopicInfo)
+	if err != nil {
+		response.Error(c, ecode.ErrSubscribeMQTT)
+		return
+	}
+	response.Success(c)
+}
+
+// Unsubscribe a MQTT topic
+// @Summary unsubscribe mqtt topic
+// @Description submit information to unsubscribe mqtt message
+// @Tags MQTT
+// @accept json
+// @Produce json
+// @Security BearerTokenAuth
+// @Param data body types.MQTTUnsubscribeRequest true "mqtt information"
+// @Success 200 {object} types.Result{}
+// @Router /api/v1/mqtt/unsubscribe [post]
+func (h *mqttHandler) Unsubscribe(c *gin.Context) {
+	form := &types.MQTTUnsubscribeRequest{}
+	err := c.ShouldBindJSON(form)
+	if err != nil {
+		logger.Warn("ShouldBindJSON error: ", logger.Err(err), middleware.GCtxRequestIDField(c))
+		response.Error(c, ecode.InvalidParams)
+		return
+	}
+
+	subTopicInfo := &MQTT.SubTopicInfo{}
+	err = copier.Copy(subTopicInfo, form)
+	err = MQTT.Unsubscribe(*subTopicInfo)
+	if err != nil {
+		response.Error(c, ecode.ErrUnsubscribeMQTT)
+		return
+	}
+	response.Success(c)
 }

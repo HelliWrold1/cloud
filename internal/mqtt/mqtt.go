@@ -22,8 +22,8 @@ var rulesFromCloud string = "rulesFromCloud"
 var downlinkToNode string = "downlinkToNode"
 
 type SubTopicInfo struct {
-	qos      byte
-	callback MQTT.MessageHandler
+	Topic string
+	Qos   byte
 }
 
 type PubMsgInfo struct {
@@ -79,6 +79,25 @@ func Publish(p PubMsgInfo) error {
 	if token := client.Publish(p.Topic, p.Qos, p.Retain, p.Payload); token.Wait() && token.Error() != nil {
 		return token.Error()
 	}
+	fmt.Println("Publish topic: " + p.Topic + " Message: " + p.Payload)
+	return nil
+}
+
+// Subscribe 订阅主题消息
+func Subscribe(s SubTopicInfo) error {
+	if token := client.Subscribe(s.Topic, s.Qos, messageReceivedCallback); token.Wait() && token.Error() != nil {
+		return token.Error()
+	}
+	fmt.Println("Subscribe topic " + s.Topic)
+	return nil
+}
+
+// Unsubscribe 取消订阅主题消息
+func Unsubscribe(s SubTopicInfo) error {
+	if token := client.Unsubscribe(s.Topic); token.Wait() && token.Error() != nil {
+		return token.Error()
+	}
+	fmt.Println("Unsubscribe topic " + s.Topic)
 	return nil
 }
 

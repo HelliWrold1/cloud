@@ -14,5 +14,7 @@ func init() {
 }
 
 func MQTTRouter(group *gin.RouterGroup, h handler.MQTTHandler) {
-	group.POST("/mqtt/publish", middleware.Auth(), h.Publish)
+	group.POST("/mqtt/publish", middleware.AuthAdmin(), h.Publish)
+	group.POST("/mqtt/subscribe", middleware.AuthAdmin(), h.Subscribe)
+	group.POST("/mqtt/unsubscribe", middleware.AuthAdmin(), h.Unsubscribe)
 }

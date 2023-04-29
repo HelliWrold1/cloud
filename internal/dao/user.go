@@ -89,7 +89,7 @@ func (d *userDao) UpdateByID(ctx context.Context, table *model.User) error {
 	update := map[string]interface{}{}
 
 	if table.Username != "" {
-		update["user"] = table.Username
+		update["username"] = table.Username
 	}
 	if table.Password != "" {
 		update["password"] = table.Password
@@ -269,7 +269,7 @@ func (d *userDao) GetByColumns(ctx context.Context, params *query.Params) ([]*mo
 func (d *userDao) ExistUserByUsername(ctx context.Context, username string) (*model.User, bool) {
 	record := &model.User{}
 
-	err := d.db.WithContext(ctx).Where("user = ?", username).Find(record).Error
+	err := d.db.WithContext(ctx).Where("username = ?", username).First(record).Error
 	if err != nil {
 		return nil, false
 	}
