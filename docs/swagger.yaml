@@ -1,0 +1,872 @@
+definitions:
+  types.Column:
+    properties:
+      exp:
+        description: expressions, which default to = when the value is null, have
+          =, ! =, >, >=, <, <=, like
+        type: string
+      logic:
+        description: logical type, defaults to and when value is null, only &(and),
+          ||(or)
+        type: string
+      name:
+        description: column name
+        type: string
+      value:
+        description: column value
+    type: object
+  types.CreateDownlinkRequest:
+    properties:
+      dev_addr:
+        type: string
+      down_link:
+        type: string
+    type: object
+  types.CreateFrameRequest:
+    properties:
+      data_type:
+        type: integer
+      dev_addr:
+        type: string
+      frame:
+        type: string
+      gateway_mac:
+        type: string
+    type: object
+  types.CreateUserRequest:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  types.DeleteDownlinksByIDsRequest:
+    properties:
+      ids:
+        description: id list
+        items:
+          type: integer
+        minItems: 1
+        type: array
+    type: object
+  types.DeleteFramesByIDsRequest:
+    properties:
+      ids:
+        description: id list
+        items:
+          type: integer
+        minItems: 1
+        type: array
+    type: object
+  types.DeleteUsersByIDsRequest:
+    properties:
+      ids:
+        description: id list
+        items:
+          type: integer
+        minItems: 1
+        type: array
+    type: object
+  types.GetDownlinksByIDsRequest:
+    properties:
+      ids:
+        description: id list
+        items:
+          type: integer
+        minItems: 1
+        type: array
+    type: object
+  types.GetFramesByIDsRequest:
+    properties:
+      ids:
+        description: id list
+        items:
+          type: integer
+        minItems: 1
+        type: array
+    type: object
+  types.GetUsersByIDsRequest:
+    properties:
+      ids:
+        description: id list
+        items:
+          type: integer
+        minItems: 1
+        type: array
+    type: object
+  types.LoginUserRequest:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  types.MQTTPublishRequest:
+    properties:
+      payload:
+        type: string
+      qos:
+        type: integer
+      retain:
+        type: boolean
+      topic:
+        type: string
+    type: object
+  types.MQTTSubscribeRequest:
+    properties:
+      qos:
+        type: integer
+      topic:
+        type: string
+    type: object
+  types.MQTTUnsubscribeRequest:
+    properties:
+      qos:
+        type: integer
+      topic:
+        type: string
+    type: object
+  types.Params:
+    properties:
+      columns:
+        description: query conditions
+        items:
+          $ref: '#/definitions/types.Column'
+        type: array
+      page:
+        description: page number, starting from page 0
+        minimum: 0
+        type: integer
+      size:
+        description: lines per page
+        type: integer
+      sort:
+        description: sorted fields, multi-column sorting separated by commas
+        type: string
+    type: object
+  types.Result:
+    properties:
+      code:
+        description: return code
+        type: integer
+      data:
+        description: return data
+      msg:
+        description: return information description
+        type: string
+    type: object
+  types.UpdateDownlinkByIDRequest:
+    properties:
+      dev_addr:
+        type: string
+      down_link:
+        type: string
+      id:
+        description: uint64 id
+        type: integer
+    type: object
+  types.UpdateFrameByIDRequest:
+    properties:
+      data_type:
+        type: integer
+      dev_addr:
+        type: string
+      frame:
+        type: string
+      gateway_mac:
+        type: string
+      id:
+        description: uint64 id
+        type: integer
+    type: object
+  types.UpdateUserByIDRequest:
+    properties:
+      id:
+        description: uint64 id
+        type: integer
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  types.UpdateUserPasswordRequest:
+    properties:
+      new_password:
+        type: string
+      old_password:
+        type: string
+      username:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: http server api docs
+  title: cloud api docs
+  version: v0.0.0
+paths:
+  /api/v1/downlink:
+    post:
+      consumes:
+      - application/json
+      description: submit information to create downlink
+      parameters:
+      - description: downlink information
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/types.CreateDownlinkRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.Result'
+      security:
+      - BearerTokenAuth: []
+      summary: create downlink
+      tags:
+      - downlink
+  /api/v1/downlink/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete downlink by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.Result'
+      security:
+      - BearerTokenAuth: []
+      summary: delete downlink
+      tags:
+      - downlink
+    get:
+      consumes:
+      - application/json
+      description: get downlink details by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.Result'
+      security:
+      - BearerTokenAuth: []
+      summary: get downlink details
+      tags:
+      - downlink
+    put:
+      consumes:
+      - application/json
+      description: update downlink information by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: downlink information
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/types.UpdateDownlinkByIDRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.Result'
+      security:
+      - BearerTokenAuth: []
+      summary: update downlink information
+      tags:
+      - downlink
+  /api/v1/downlinks:
+    post:
+      consumes:
+      - application/json
+      description: paging and conditional fetching of downlinks lists using post requests
+      parameters:
+      - description: query parameters
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/types.Params'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.Result'
+      security:
+      - BearerTokenAuth: []
+      summary: get a list of downlinks
+      tags:
+      - downlink
+  /api/v1/downlinks/delete/ids:
+    post:
+      consumes:
+      - application/json
+      description: delete downlinks by multiple id using a post request
+      parameters:
+      - description: id array
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/types.DeleteDownlinksByIDsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.Result'
+      security:
+      - BearerTokenAuth: []
+      summary: delete downlinks by multiple id
+      tags:
+      - downlink
+  /api/v1/downlinks/ids:
+    post:
+      consumes:
+      - application/json
+      description: get downlinks by multiple id using a post request
+      parameters:
+      - description: id array
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/types.GetDownlinksByIDsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.Result'
+      security:
+      - BearerTokenAuth: []
+      summary: get downlinks by multiple id
+      tags:
+      - downlink
+  /api/v1/frame:
+    post:
+      consumes:
+      - application/json
+      description: submit information to create frame
+      parameters:
+      - description: frame information
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/types.CreateFrameRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.Result'
+      security:
+      - BearerTokenAuth: []
+      summary: create frame
+      tags:
+      - frame
+  /api/v1/frame/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete frame by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.Result'
+      security:
+      - BearerTokenAuth: []
+      summary: delete frame
+      tags:
+      - frame
+    get:
+      consumes:
+      - application/json
+      description: get frame details by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.Result'
+      summary: get frame details
+      tags:
+      - frame
+    put:
+      consumes:
+      - application/json
+      description: update frame information by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: frame information
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/types.UpdateFrameByIDRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.Result'
+      security:
+      - BearerTokenAuth: []
+      summary: update frame information
+      tags:
+      - frame
+  /api/v1/frames:
+    post:
+      consumes:
+      - application/json
+      description: paging and conditional fetching of frames lists using post requests
+      parameters:
+      - description: query parameters
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/types.Params'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.Result'
+      summary: get a list of frames
+      tags:
+      - frame
+  /api/v1/frames/delete/ids:
+    post:
+      consumes:
+      - application/json
+      description: delete frames by multiple id using a post request
+      parameters:
+      - description: id array
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/types.DeleteFramesByIDsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.Result'
+      security:
+      - BearerTokenAuth: []
+      summary: delete frames by multiple id
+      tags:
+      - frame
+  /api/v1/frames/ids:
+    post:
+      consumes:
+      - application/json
+      description: get frames by multiple id using a post request
+      parameters:
+      - description: id array
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/types.GetFramesByIDsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.Result'
+      summary: get frames by multiple id
+      tags:
+      - frame
+  /api/v1/mqtt/publish:
+    post:
+      consumes:
+      - application/json
+      description: submit information to publish mqtt message
+      parameters:
+      - description: mqtt information
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/types.MQTTPublishRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.Result'
+      security:
+      - BearerTokenAuth: []
+      summary: publish mqtt message
+      tags:
+      - MQTT
+  /api/v1/mqtt/subscribe:
+    post:
+      consumes:
+      - application/json
+      description: submit information to subscribe mqtt message
+      parameters:
+      - description: mqtt information
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/types.MQTTSubscribeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.Result'
+      security:
+      - BearerTokenAuth: []
+      summary: subscribe mqtt topic
+      tags:
+      - MQTT
+  /api/v1/mqtt/unsubscribe:
+    post:
+      consumes:
+      - application/json
+      description: submit information to unsubscribe mqtt message
+      parameters:
+      - description: mqtt information
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/types.MQTTUnsubscribeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.Result'
+      security:
+      - BearerTokenAuth: []
+      summary: unsubscribe mqtt topic
+      tags:
+      - MQTT
+  /api/v1/user/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete user by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.Result'
+      security:
+      - BearerTokenAuth: []
+      summary: delete user
+      tags:
+      - user
+    get:
+      consumes:
+      - application/json
+      description: get user details by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.Result'
+      security:
+      - BearerTokenAuth: []
+      - BearerTokenAuth: []
+      summary: get user details
+      tags:
+      - user
+    put:
+      consumes:
+      - application/json
+      description: update user information by id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: user information
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/types.UpdateUserByIDRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.Result'
+      security:
+      - BearerTokenAuth: []
+      summary: update user information
+      tags:
+      - user
+  /api/v1/user/info:
+    get:
+      consumes:
+      - application/json
+      description: get user details by uid
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.Result'
+      security:
+      - BearerTokenAuth: []
+      summary: get user details
+      tags:
+      - user
+  /api/v1/user/login:
+    post:
+      consumes:
+      - application/json
+      description: login user
+      parameters:
+      - description: user information and new password
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/types.LoginUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.Result'
+      summary: login user
+      tags:
+      - user
+  /api/v1/user/logout:
+    post:
+      consumes:
+      - application/json
+      description: delete c.Context's key uid
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.Result'
+      security:
+      - BearerTokenAuth: []
+      summary: delete c.Context's key uid
+      tags:
+      - user
+  /api/v1/user/register:
+    post:
+      consumes:
+      - application/json
+      description: submit information to register user
+      parameters:
+      - description: user information
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/types.CreateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.Result'
+      security:
+      - BearerTokenAuth: []
+      summary: register user
+      tags:
+      - user
+  /api/v1/user/update:
+    put:
+      consumes:
+      - application/json
+      description: update user's password to new
+      parameters:
+      - description: user information and new password
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/types.UpdateUserPasswordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.Result'
+      security:
+      - BearerTokenAuth: []
+      summary: update user's password to new
+      tags:
+      - user
+  /api/v1/users:
+    post:
+      consumes:
+      - application/json
+      description: paging and conditional fetching of users lists using post requests
+      parameters:
+      - description: query parameters
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/types.Params'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.Result'
+      security:
+      - BearerTokenAuth: []
+      summary: get a list of users
+      tags:
+      - user
+  /api/v1/users/delete/ids:
+    post:
+      consumes:
+      - application/json
+      description: delete users by multiple id using a post request
+      parameters:
+      - description: id array
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/types.DeleteUsersByIDsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.Result'
+      security:
+      - BearerTokenAuth: []
+      summary: delete users by multiple id
+      tags:
+      - user
+  /api/v1/users/ids:
+    post:
+      consumes:
+      - application/json
+      description: get users by multiple id using a post request
+      parameters:
+      - description: id array
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/types.GetUsersByIDsRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/types.Result'
+      security:
+      - BearerTokenAuth: []
+      - BearerTokenAuth: []
+      summary: get users by multiple id
+      tags:
+      - user
+schemes:
+- http
+- https
+securityDefinitions:
+  BearerTokenAuth:
+    description: Bearer token authentication
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
