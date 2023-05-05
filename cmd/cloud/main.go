@@ -23,8 +23,7 @@ func main() {
 	jwt.Init()
 	err := MQTT.Init()
 	if err != nil {
-		logrus.Fatal("MQTT error")
-		return
+		logrus.Debug("MQTT Connection error")
 	}
 	defer MQTT.Close()
 	servers := initial.RegisterServers()
