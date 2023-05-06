@@ -49,8 +49,10 @@ func Init() error {
 	opts := MQTT.NewClientOptions().AddBroker("tcp://localhost:1883")
 
 	opts.SetAutoReconnect(true)
-	opts.SetMaxReconnectInterval(5 * time.Second)
-	//opts.SetReconnectingHandler();
+	opts.SetMaxReconnectInterval(1 * time.Second)
+	opts.SetReconnectingHandler(func(c MQTT.Client, options *MQTT.ClientOptions) {
+		fmt.Println("MQTT reconnecting")
+	})
 	opts.SetClientID("go-mqtt-client")
 
 	opts.SetOnConnectHandler(func(c MQTT.Client) {
@@ -63,6 +65,9 @@ func Init() error {
 
 	opts.SetConnectionLostHandler(func(c MQTT.Client, err error) {
 		fmt.Println("MQTT connection lost")
+		if token := client.Connect(); token.Wait() && token.Error() != nil {
+			fmt.Println("MQTT reconnect")
+		}
 	})
 
 	// 创建MQTT客户端

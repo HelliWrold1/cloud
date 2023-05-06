@@ -2,9 +2,9 @@ package main
 
 import (
 	"github.com/HelliWrold1/cloud/cmd/cloud/initial"
-	"github.com/sirupsen/logrus"
 	"github.com/zhufuyi/sponge/pkg/app"
 	"github.com/zhufuyi/sponge/pkg/jwt"
+	"github.com/zhufuyi/sponge/pkg/logger"
 
 	MQTT "github.com/HelliWrold1/cloud/internal/mqtt"
 )
@@ -23,7 +23,7 @@ func main() {
 	jwt.Init()
 	err := MQTT.Init()
 	if err != nil {
-		logrus.Debug("MQTT Connection error")
+		logger.Debug("MQTT Connection error")
 	}
 	defer MQTT.Close()
 	servers := initial.RegisterServers()
